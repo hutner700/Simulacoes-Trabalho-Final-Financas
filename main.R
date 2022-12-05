@@ -119,16 +119,14 @@ for (i in unique(final[,'simulacao'])){
   tir <- TIR(amostra[,'fluxoCaixa'],0,2,0.01)
   VPLa <- VPL(amostra[,'fluxoCaixa'],0.15)
   payBack <- amostra[amostra[,'fluxoAcumulado'] > 0,"ano"][1]
-  roi <- tail(amostra[,'fluxoAcumulado'],1) / invInicial0
+  roi <- (tail(amostra[,'fluxoAcumulado'],1) + invInicial0)/ invInicial0
   resultado_simulacoes <- rbind(resultado_simulacoes,c(tir,VPLa,payBack,roi))
 }
 resultado_simulacoes <- resultado_simulacoes[-1,]
 hist(resultado_simulacoes[,'VPL'],breaks = 20)
-min(resultado_simulacoes[,'VPL'])
-resultado_simulacoes[,'VPL']
-hist(resultado_simulacoes[,'roi'])
+hist(na.omit(resultado_simulacoes[,'roi']))
 hist(resultado_simulacoes[,'tir'],breaks = 20)
-hist(resultado_simulacoes[,'payBack'])
+hist(resultado_simulacoes[,'payBack'],breaks = 20)
 
 summary(resultado_simulacoes)
 nomecolunas <- c("Media","Desvio Padrao")
@@ -143,5 +141,6 @@ rownames(status) <- nomelinhas
 colnames(status) <- nomecolunas
 stargazer(status,type="text")
 
-
-sum(resultado_simulacoes[,'payBack'] == 3) / sum(resultado_simulacoes[,'payBack'] > 0)
+mean(resultado_simulacoes[,'roi'])
+sd(resultado_simulacoes[,'roi'])
+sum(resultado_simulacoes[,'payBack'] == 2) / sum(resultado_simulacoes[,'payBack'] > 0)
