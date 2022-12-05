@@ -50,9 +50,11 @@ fluxo0 <- entradas0 - totalSaidas0
 
 
 final <- data.frame()
-final <- rbind(final,c(0,0,0,0,0,0,0,0))
-colnames(final) <- c("simulacao","alunos","aluguel","custo","pessoal",
+
+colunas <-  c("simulacao","alunos","aluguel","custo","pessoal",
                      "despesas","imposto","fluxoCaixa","fluxoAcumulado","ano")
+final <- rbind(final,c(rep(0,length(colunas))))
+colnames(final) <- colunas
 # Simulacoes:
 set.seed(123)
 for (j in 1:5000){
@@ -64,7 +66,7 @@ for (j in 1:5000){
   imposto <- c(imposto0)
   fluxo <- c(fluxo0)
   fluxoAcumulado <- c(fluxo0)
-  for (i in 1:3) {
+  for (i in 1:4) {
     # Entrada
     siAlunos <- rnorm(1, 0.05, 0.03)
     siAluguel <- rnorm(1, 0.06, 0.02)
@@ -84,8 +86,7 @@ for (j in 1:5000){
       tail(aluguel, 1)
       - (tail(custoOp,1)+
          tail(pessoal,1)+
-         tail(pessoal,1)+
-         tail(pessoal,1)+
+         tail(despeOp,1)+
          tail(imposto,1))
       ))
     fluxoAcumulado <- c(fluxoAcumulado,sum(fluxo))
@@ -103,23 +104,22 @@ for (j in 1:5000){
       fluxoAcumulado,
       seq_along(aluguel)-1
     ))
-  colnames(temp) <- c("simulacao","alunos","aluguel","custo","pessoal",
-                     "despesas","imposto","fluxoCaixa","fluxoAcumulado","ano")
+  colnames(temp) <- colunas
   final <- rbind(final,temp)
 }
 final <- final[-1,]
 tail(final)
+head(final)
 
 vpls <- c()
 taxa <- 0.10
-for (i in 1:5000){
-  vpls <- c(vpls, VPL(c(final[i,1] - invInicial0,final[i,2:dim(final)[2]]),i=taxa))
+resultado_simulacoes <- matrix(ncol=4)
+
+for (i in unique(final[,'simulacao'])){
+  amostra <- final[final[,'simulacao'] == i,]
+  tir <- TIR(amostra[,'fluxoCaixa'],-1,1,0.01)
+  VPLa <- VPL(amostra[,'fluxoCaixa'],0.13)
+  payBack <- amostra[amostra[,'fluxoAcumulado'] > 0,"ano"][1]
+  roi <- tail(amostra[,'fluxoAcumulado'],1) / invInicial0
 }
-
-hist(vpls)
-
-sum(vpls>0) / length(vpls)
-
-TIR(final[1,],min=-1,max=1,0.0001)
-
-rbind(matrix(c(1,2,3,4,5),ncol = 5),matrix(c(1,2,3,4,5),ncol = 5))
+i <- 50
