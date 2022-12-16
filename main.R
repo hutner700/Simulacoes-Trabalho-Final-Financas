@@ -2,9 +2,8 @@ library(ggplot2)
 library(ggpubr)
 library(FinancialMath)
 library(tidyverse)
-install.packages("tidyverse")
 library(rootSolve)
-library("stargazer")
+library(stargazer)
 
 VPL <- function(vector,i){
   valor <- 0
@@ -109,7 +108,7 @@ for (j in 1:5000){
   final <- rbind(final,temp)
 }
 final <- final[-1,]
-
+write.table(final,file="Simulacoes.csv",sep=';',dec=',', row.names = FALSE)
 
 resultado_simulacoes <- matrix(ncol=4)
 colnames(resultado_simulacoes) <- c("tir","VPL","payBack","roi")
@@ -123,6 +122,9 @@ for (i in unique(final[,'simulacao'])){
   resultado_simulacoes <- rbind(resultado_simulacoes,c(tir,VPLa,payBack,roi))
 }
 resultado_simulacoes <- resultado_simulacoes[-1,]
+
+mean(resultado_simulacoes[,'VPL'])
+sd(resultado_simulacoes[,'VPL'])
 hist(resultado_simulacoes[,'VPL'],breaks = 20)
 hist(na.omit(resultado_simulacoes[,'roi']))
 hist(resultado_simulacoes[,'tir'],breaks = 20)
